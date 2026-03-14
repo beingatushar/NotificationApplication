@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/notificationapplication?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root} # Defaults to 'root' if no env variable is set
+    password: ${DB_PASSWORD:password} # Replace 'password' with your default local dev password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # Automatically creates and updates your tables
+    show-sql: true # Prints SQL queries to the console for debugging
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+  # Your existing mail config stays here
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
