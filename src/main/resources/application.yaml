@@ -1,8 +1,13 @@
 spring:
+  # Enable Java 21 Virtual Threads for extreme concurrency
+  threads:
+    virtual:
+      enabled: true
+
   datasource:
-    url: jdbc:mysql://localhost:3306/notificationapplication?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root} # Defaults to 'root' if no env variable is set
-    password: ${DB_PASSWORD:password} # Replace 'password' with your default local dev password
+    url: jdbc:mysql://localhost:3306/notificationapplication?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -10,7 +15,6 @@ spring:
     show-sql: true # Prints SQL queries to the console for debugging
     database-platform: org.hibernate.dialect.MySQLDialect
 
-  # Your existing mail config stays here
   mail:
     host: smtp.gmail.com
     port: 587
@@ -22,3 +26,8 @@ spring:
           auth: true
           starttls:
             enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 50MB
