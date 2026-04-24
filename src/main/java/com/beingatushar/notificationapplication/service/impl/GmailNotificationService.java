@@ -54,7 +54,7 @@ public class GmailNotificationService implements EmailNotificationService {
 
             helper.setTo(recipient);
             helper.setSubject(subject);
-            helper.setText(body);
+            helper.setText(body,true);
 
             for (EmailAttachment attachment : attachments) {
                 helper.addAttachment(attachment.filename(), new ByteArrayResource(attachment.data()));
