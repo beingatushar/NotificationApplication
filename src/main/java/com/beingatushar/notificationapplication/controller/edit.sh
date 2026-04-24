@@ -1,6 +1,5 @@
-# 1. Swap the database driver from PostgreSQL/MySQL to H2 in build.gradle
+# 1. Update build.gradle to use the H2 driver
 sed -i "s/runtimeOnly 'org.postgresql:postgresql'/runtimeOnly 'com.h2database:h2'/g" build.gradle
-sed -i "s/runtimeOnly 'com.mysql:mysql-connector-j'/runtimeOnly 'com.h2database:h2'/g" build.gradle
 
 # 2. Update application.yaml to use the local H2 database
 cat << 'EOF' > src/main/resources/application.yaml
@@ -20,9 +19,6 @@ spring:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
 
   mail:
     host: smtp.gmail.com
@@ -42,9 +38,7 @@ spring:
       max-request-size: 50MB
 EOF
 
-# 3. Fix the Email Service to support emojis/HTML in the body
-sed -i 's/helper.setText(body);/helper.setText(body, true);/g' src/main/java/com/beingatushar/notificationapplication/service/impl/GmailNotificationService.java
-
-# 4. Commit and Push to GitHub
-git add build.gradle src/main/resources/application.yaml src/main/java/com/beingatushar/notificationapplication/service/impl/GmailNotificationService.java
-git commit -m "fix: switch to H2 database for IPv4 compatibility and enable HTML email support"
+# 3. Commit and Push to GitHub
+git add build.gradle src/main/resources/application.yaml
+git commit -m "fix: switch to local H2 database to bypass IPv6 networking blocks"
+#git push origin main
