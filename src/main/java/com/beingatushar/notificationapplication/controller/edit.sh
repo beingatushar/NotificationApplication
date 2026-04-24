@@ -1,7 +1,8 @@
-# 1. Update build.gradle to use PostgreSQL instead of MySQL
-sed -i "s/runtimeOnly 'com.mysql:mysql-connector-j'/runtimeOnly 'org.postgresql:postgresql'/g" build.gradle
+# 1. Swap the database driver from PostgreSQL/MySQL to H2 in build.gradle
+sed -i "s/runtimeOnly 'org.postgresql:postgresql'/runtimeOnly 'com.h2database:h2'/g" build.gradle
+sed -i "s/runtimeOnly 'com.mysql:mysql-connector-j'/runtimeOnly 'com.h2database:h2'/g" build.gradle
 
-# 2. Update application.yaml for PostgreSQL and Environment Variables
+# 2. Update application.yaml to use the local H2 database
 cat << 'EOF' > src/main/resources/application.yaml
 spring:
   threads:
@@ -9,16 +10,19 @@ spring:
       enabled: true
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:notificationdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
 
   mail:
     host: smtp.gmail.com
@@ -38,15 +42,9 @@ spring:
       max-request-size: 50MB
 EOF
 
-# 3. Update settings.gradle to include the Foojay plugin for Java 21 support
-cat << 'EOF' > settings.gradle
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
-rootProject.name = 'NotificationApplication'
-EOF
+# 3. Fix the Email Service to support emojis/HTML in the body
+sed -i 's/helper.setText(body);/helper.setText(body, true);/g' src/main/java/com/beingatushar/notificationapplication/service/impl/GmailNotificationService.java
 
-# 4. Git Push changes
-git add build.gradle src/main/resources/application.yaml settings.gradle
-git commit -m "chore: migrate to hibernate postgresql and add foojay plugin"
-git push origin main
+# 4. Commit and Push to GitHub
+git add build.gradle src/main/resources/application.yaml src/main/java/com/beingatushar/notificationapplication/service/impl/GmailNotificationService.java
+git commit -m "fix: switch to H2 database for IPv4 compatibility and enable HTML email support"
