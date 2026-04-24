@@ -1,7 +1,7 @@
-# 1. Update build.gradle to use the H2 driver
+# 1. Update build.gradle to include H2 driver
 sed -i "s/runtimeOnly 'org.postgresql:postgresql'/runtimeOnly 'com.h2database:h2'/g" build.gradle
 
-# 2. Update application.yaml to use the local H2 database
+# 2. Update application.yaml to use local H2 database
 cat << 'EOF' > src/main/resources/application.yaml
 spring:
   threads:
@@ -38,7 +38,21 @@ spring:
       max-request-size: 50MB
 EOF
 
-# 3. Commit and Push to GitHub
-git add build.gradle src/main/resources/application.yaml
-git commit -m "fix: switch to local H2 database to bypass IPv6 networking blocks"
+# 3. Fix settings.gradle for Java 21 support
+cat << 'EOF' > settings.gradle
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+rootProject.name = 'NotificationApplication'
+EOF
+
+# 4. Update the email service to support emojis/HTML
+sed -i 's/helper.setText(body);/helper.setText(body, true);/g' src/main/java/com/beingatushar/notificationapplication/service/impl/GmailNotificationService.java
+
+# 5. Push to GitHub so your run.sh script pulls the correct version
+git add build.gradle src/main/resources/application.yaml settings.gradle src/main/java/com/beingatushar/notificationapplication/service/impl/GmailNotificationService.java
+git commit -m "fix: move to local H2 database and enable HTML email support"
 #git push origin main
+
+# 6. Execute the run script
+./run.sh
