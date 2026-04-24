@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry:2.0.12'
     implementation 'org.springframework.boot:spring-boot-starter-aspectj' // Renamed in Spring Boot 4!
 
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'com.h2database:h2'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
